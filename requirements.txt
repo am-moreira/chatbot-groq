@@ -6,3 +6,5 @@ pytube
 pypdf
 pandas
 python-dotenv
+beautifulsoup4
+reportlab

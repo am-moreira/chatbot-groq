@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from historico import exibir_historico, historico_txt, historico_csv, historico_pdf
 
 from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate
@@ -55,6 +56,31 @@ def carrega_youtube():
     documento += doc.page_content
   return documento
 
+def mostrar_menu_salvamento(mensagens):
+    while True:
+        print("\nVocê deseja salvar o histórico de conversa?")
+        print("1 - Salvar como TXT")
+        print("2 - Salvar como CSV")
+        print("3 - Salvar como PDF")
+        print("x - Não salvar e sair")
+
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == '1':
+            historico_txt(mensagens)
+            break
+        elif opcao == '2':
+            historico_csv(mensagens)
+            break
+        elif opcao == '3':
+            historico_pdf(mensagens)
+            break
+        elif opcao.lower() == 'x':
+            print("Saindo sem salvar o histórico.")
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
 print('Bem-vindo ao Osvaldinho!\n Escolha uma das opções abaixo para começar a conversar:')
 
 txt_selecao = '''
@@ -65,30 +91,33 @@ Digite 3 - Conversar com PDF
 Digite x - Sair
 '''
 while True:
-  selecao = input(txt_selecao)
-  if selecao == '1':
-    documento = carrega_site()
-    break
-  elif selecao == '2':
-    documento = carrega_youtube()
-    break
-  elif selecao == '3':
-    documento = carrega_pdf()
-    break
-  else:
-    print('Opção inválida. Tente novamente.')
+    selecao = input(txt_selecao)
+    if selecao == '1':
+        documento = carrega_site()
+        break
+    elif selecao == '2':
+        documento = carrega_youtube()
+        break
+    elif selecao == '3':
+        documento = carrega_pdf()
+        break
+    elif selecao.lower() == 'x':
+        print("Saindo...")
+        exit()  # Encerra o programa
+    else:
+        print('Opção inválida. Tente novamente.')
 
-mensagens = [] #Listas
+mensagens = []  # Lista de mensagens
 while True:
-  pergunta = input('Usuário: ')
-  if pergunta.lower() == 'x':
-    break
+    pergunta = input('Usuário: ')
+    if pergunta.lower() == 'x':
+        exibir_historico(mensagens)  # Exibe o histórico antes de perguntar sobre salvar
+        mostrar_menu_salvamento(mensagens)  # Chama o menu de salvamento
+        break  # Sai do loop após salvar ou optar por não salvar
 
-  mensagens.append(('user', pergunta))
-  resposta = resposta_bot(mensagens, documento)
-  mensagens.append(('assistant', resposta))
-  print('Osvaldinho: ', resposta)
+    mensagens.append(('user', pergunta))
+    resposta = resposta_bot(mensagens, documento)
+    mensagens.append(('assistant', resposta))
+    print('Osvaldinho: ', resposta)
 
-print('\nBot: Até a próxima!')
-print('Abaixo está seu histórico')
-print(mensagens)
+print('Bot: Até a próxima!')
